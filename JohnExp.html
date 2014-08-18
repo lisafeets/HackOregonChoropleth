@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Mappy</title>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+    </head>
+    <body>
+      <h1>John Kitzhaber</h1>
+      <h2>National expenditures during the 2014 gubernatorial election in Oregon</h2>  
+      <script type="text/javascript">
+    
+        var width = 960;
+		var	height = 600;
+
+		
+		var svg = d3.select("body").append("svg")
+			.attr("width", width)
+			.attr("height", height);
+
+		var path = d3.geo.path();
+ 
+        var color = d3.scale.linear()
+                    .domain([100, 1000, 10000, 100000, 1000000, 10000000])
+					.range(["rgb(204,236,230)", "rgb(153,216,201)", "rgb(102,194,164)", "rgb(65,174,118)","rgb(35,139,69)","rgb(0,109,44)"]);
+ 
+        d3.csv("data/JohnExp.csv", function(data) {
+ 
+ 
+  				// color.domain([
+  				// 	d3.min(data, function(d) { return d.value; }), 
+  				// 	d3.max(data, function(d) { return d.value; })
+  				// ]);
+ 
+ 
+				d3.json("data/us-states.json", function(json) {
+ 
+		        for (var i = 0; i < data.length; i++) {
+		            var dataState = data[i].state;
+		            var dataValue = parseFloat(data[i].value);
+		            for (var j = 0; j < json.features.length; j++) {
+			            var jsonState = json.features[j].properties.name;
+			            if (dataState == jsonState) {
+			                json.features[j].properties.value = dataValue;
+			                break;
+ 
+        }
+    }
+}
+ 
+        svg.selectAll("path")
+     			.data(json.features)
+     			.enter()
+     			.append("path")
+     			.attr("d", path)
+     			.style("fill", function(d) {
+     				var value = d.properties.value;
+     				if (value) {
+     					return color(value);
+     				} else {
+     					return "#ccc";
+     				}
+     			});
+			});
+});
+ 
+        </script>        
+    </body>
+</html> 
